@@ -1,0 +1,7 @@
+{
+  "description": "Marketing website for the Northstar trading bot project",
+  "workspace": "/home/user/northstar/projects/my-website/workspace",
+  "tech_stack": ["Next.js", "TypeScript", "Tailwind CSS"],
+  "tags": ["web", "frontend", "marketing"],
+  "created": "2026-03-25"
+}

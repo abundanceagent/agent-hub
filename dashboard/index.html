@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+  [x-cloak] { display: none !important; }
+  body { background: #080b11; color: #c9d1d9; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+  .card { background: #0d1117; border: 1px solid #21262d; border-radius: 8px; }
+  .feed-entry { border-left: 2px solid transparent; padding: 3px 8px; font-size: 12px; line-height: 1.6; }
+  .feed-entry:hover { background: #161b22; }
+  .agent-pill { display: inline-block; padding: 1px 7px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+  .pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+  .slide-in { animation: slideIn 0.2s ease; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+  input, textarea, select { background: #161b22 !important; border: 1px solid #30363d !important; color: #c9d1d9 !important; }
+  input:focus, textarea:focus, select:focus { outline: none !important; border-color: #388bfd !important; }
+  .chat-bubble-user { background: #1f3a5f; border-radius: 12px 12px 2px 12px; }
+  .chat-bubble-hub { background: #1a2332; border-radius: 12px 12px 12px 2px; border-left: 2px solid #388bfd; }
+</style>
+</head>
+<body x-data="hub()" x-init="init()" x-cloak>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="flex items-center justify-between px-5 py-3 border-b border-[#21262d] bg-[#0d1117]">
+  <div class="flex items-center gap-3">
+    <span class="text-[#388bfd] font-bold text-base tracking-tight">⬡ Agent Hub</span>
+    <span class="text-[#8b949e] text-xs" x-text="`${projects.length} project${projects.length !== 1 ? 's' : ''}`"></span>
+  </div>
+
+  <!-- Status pill -->
+  <div class="flex items-center gap-2">
+    <template x-if="runningTask">
+      <div class="flex items-center gap-2 bg-[#1a2d1a] border border-[#238636] rounded-full px-3 py-1">
+        <span class="w-2 h-2 rounded-full bg-[#3fb950] pulse"></span>
+        <span class="text-[#3fb950] text-xs font-semibold" x-text="`Working on: ${runningTask.project}`"></span>
+        <span class="text-[#8b949e] text-xs" x-text="runningElapsed"></span>
+      </div>
+    </template>
+    <template x-if="!runningTask">
+      <div class="flex items-center gap-2 bg-[#161b22] border border-[#30363d] rounded-full px-3 py-1">
+        <span class="w-2 h-2 rounded-full bg-[#8b949e]"></span>
+        <span class="text-[#8b949e] text-xs">Idle</span>
+      </div>
+    </template>
+  </div>
+
+  <!-- Submit task bar -->
+  <div class="flex items-center gap-2">
+    <select x-model="submitProject" class="text-xs rounded px-2 py-1.5 w-36">
+      <template x-for="p in projects" :key="p.name">
+        <option :value="p.name" x-text="p.name"></option>
+      </template>
+    </select>
+    <input
+      x-model="submitTask"
+      @keydown.enter="runTask()"
+      type="text"
+      placeholder="Type a task and press Enter…"
+      class="text-xs rounded px-3 py-1.5 w-72"
+    />
+    <button
+      @click="runTask()"
+      :disabled="!submitTask.trim() || runningTask"
+      class="text-xs bg-[#238636] hover:bg-[#2ea043] disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded font-semibold transition-colors"
+    >Run</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════ MAIN GRID ═══════════════════════ -->
+<div class="flex h-[calc(100vh-52px)]">
+
+  <!-- ── LEFT: Projects ── -->
+  <aside class="w-52 flex-shrink-0 border-r border-[#21262d] overflow-y-auto p-3 flex flex-col gap-2">
+    <p class="text-[10px] text-[#8b949e] uppercase tracking-widest font-semibold px-1 mb-1">Projects</p>
+    <template x-for="p in projects" :key="p.name">
+      <div
+        @click="selectProject(p.name)"
+        :class="selectedProject === p.name ? 'border-[#388bfd] bg-[#161b22]' : 'border-[#21262d] hover:border-[#30363d] hover:bg-[#0d1117] cursor-pointer'"
+        class="card p-3 transition-colors cursor-pointer"
+      >
+        <div class="flex items-center gap-2 mb-1">
+          <span :class="p.active ? 'bg-[#3fb950] pulse' : 'bg-[#30363d]'" class="w-2 h-2 rounded-full flex-shrink-0"></span>
+          <span class="text-xs font-semibold text-[#e6edf3] truncate" x-text="p.name"></span>
+        </div>
+        <p class="text-[10px] text-[#8b949e] leading-relaxed truncate" x-text="p.description"></p>
+        <div class="flex flex-wrap gap-1 mt-2" x-show="p.tech_stack.length">
+          <template x-for="t in p.tech_stack.slice(0,3)" :key="t">
+            <span class="text-[9px] bg-[#161b22] border border-[#30363d] rounded px-1.5 py-0.5 text-[#8b949e]" x-text="t"></span>
+          </template>
+        </div>
+      </div>
+    </template>
+    <p x-show="projects.length === 0" class="text-[11px] text-[#8b949e] px-1">No projects yet.<br>Create one in the terminal.</p>
+  </aside>
+
+  <!-- ── CENTRE: Live Feed ── -->
+  <main class="flex-1 flex flex-col overflow-hidden border-r border-[#21262d]">
+
+    <!-- Feed header -->
+    <div class="flex items-center justify-between px-4 py-2 border-b border-[#21262d]">
+      <span class="text-[10px] text-[#8b949e] uppercase tracking-widest font-semibold">Live Activity</span>
+      <div class="flex items-center gap-3">
+        <label class="flex items-center gap-1.5 text-[11px] text-[#8b949e] cursor-pointer">
+          <input type="checkbox" x-model="autoScroll" class="w-3 h-3 rounded"> Auto-scroll
+        </label>
+        <button @click="clearFeed()" class="text-[11px] text-[#8b949e] hover:text-[#c9d1d9]">Clear</button>
+      </div>
+    </div>
+
+    <!-- Feed entries -->
+    <div
+      x-ref="feed"
+      class="flex-1 overflow-y-auto p-3 flex flex-col gap-0.5 font-mono"
+    >
+      <template x-if="feedEvents.length === 0">
+        <div class="flex items-center justify-center h-full text-[#8b949e] text-sm">
+          Waiting for activity…
+        </div>
+      </template>
+
+      <template x-for="e in feedEvents" :key="e.id">
+        <div
+          class="feed-entry slide-in"
+          :style="`border-left-color: ${agentColor(e.agent)}`"
+        >
+          <!-- Timestamp -->
+          <span class="text-[#6e7681] text-[10px] mr-2" x-text="formatElapsed(e.elapsed)"></span>
+
+          <!-- Agent pill -->
+          <template x-if="e.agent">
+            <span
+              class="agent-pill mr-2"
+              :style="`background: ${agentColor(e.agent)}22; color: ${agentColor(e.agent)}`"
+              x-text="e.agent"
+            ></span>
+          </template>
+
+          <!-- Kind icons + label -->
+          <template x-if="e.kind === 'agent_start'">
+            <span>
+              <span class="text-[#58a6ff]">→ </span>
+              <span class="text-[#c9d1d9]" x-text="e.label"></span>
+            </span>
+          </template>
+          <template x-if="e.kind === 'agent_done'">
+            <span>
+              <span :style="`color: ${agentColor(e.agent)}`">✓ </span>
+              <span class="text-[#8b949e]" x-text="e.label"></span>
+              <span x-show="e.duration" class="text-[#3fb950] ml-2 text-[10px]" x-text="`${Math.round(e.duration)}s`"></span>
+            </span>
+          </template>
+          <template x-if="e.kind === 'narration'">
+            <span class="text-[#f0b429]">◆ <span x-text="e.label"></span></span>
+          </template>
+          <template x-if="e.kind === 'action'">
+            <span class="text-[#8b949e]" x-text="e.label"></span>
+          </template>
+          <template x-if="e.kind === 'result'">
+            <span class="text-[#3fb950] font-semibold">✓ Task complete</span>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <!-- Timeline summary for last completed task -->
+    <div x-show="lastTaskSummary" class="border-t border-[#21262d] p-3">
+      <p class="text-[10px] text-[#8b949e] uppercase tracking-widest mb-2">Last Task Summary</p>
+      <div class="flex gap-4 flex-wrap">
+        <template x-for="s in lastTaskSummary" :key="s.agent">
+          <div class="flex items-center gap-2">
+            <span class="agent-pill" :style="`background: ${agentColor(s.agent)}22; color: ${agentColor(s.agent)}`" x-text="s.agent"></span>
+            <span class="text-[#8b949e] text-[11px]" x-text="`${s.calls} call${s.calls>1?'s':''} · ${Math.round(s.total)}s`"></span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── RIGHT: Chat panel ── -->
+  <aside class="w-72 flex-shrink-0 flex flex-col">
+
+    <div class="flex items-center justify-between px-4 py-2 border-b border-[#21262d]">
+      <span class="text-[10px] text-[#8b949e] uppercase tracking-widest font-semibold">Direct Message</span>
+      <span class="text-[10px] text-[#8b949e]">mid-task instructions</span>
+    </div>
+
+    <!-- Chat history -->
+    <div x-ref="chatScroll" class="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
+      <template x-if="chatMessages.length === 0">
+        <div class="text-center text-[#8b949e] text-xs mt-8 leading-relaxed px-4">
+          Send messages here while a task is running.<br><br>
+          The orchestrator picks them up between agent delegations and adjusts its approach.
+        </div>
+      </template>
+      <template x-for="m in chatMessages" :key="m.id">
+        <div :class="m.role === 'user' ? 'items-end' : 'items-start'" class="flex flex-col gap-1">
+          <div
+            :class="m.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-hub'"
+            class="max-w-[90%] px-3 py-2 text-xs leading-relaxed"
+          >
+            <span x-text="m.text"></span>
+          </div>
+          <span class="text-[10px] text-[#8b949e]" x-text="m.time"></span>
+        </div>
+      </template>
+    </div>
+
+    <!-- Message input -->
+    <div class="border-t border-[#21262d] p-3">
+      <div class="text-[10px] text-[#8b949e] mb-1.5">
+        Active project: <span class="text-[#58a6ff]" x-text="chatProject || selectedProject || '—'"></span>
+      </div>
+      <div class="flex gap-2">
+        <textarea
+          x-model="chatInput"
+          @keydown.enter.exact.prevent="sendMessage()"
+          @keydown.enter.shift.exact="chatInput += '\n'"
+          placeholder="Type instruction… (Enter to send)"
+          rows="2"
+          class="flex-1 text-xs rounded px-2 py-1.5 resize-none"
+        ></textarea>
+        <button
+          @click="sendMessage()"
+          :disabled="!chatInput.trim()"
+          class="text-xs bg-[#1f3a5f] hover:bg-[#264f7a] disabled:opacity-40 disabled:cursor-not-allowed text-[#58a6ff] px-3 rounded font-semibold transition-colors"
+        >↑</button>
+      </div>
+      <p class="text-[10px] text-[#8b949e] mt-1.5">⏎ send · shift+⏎ newline</p>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ═══════════════════════ BOTTOM: Recent Tasks ═══════════════════════ -->
+<div class="fixed bottom-0 left-0 right-0 border-t border-[#21262d] bg-[#0d1117]" style="max-height: 160px;">
+  <div class="flex items-center justify-between px-4 py-1.5 border-b border-[#21262d]">
+    <span class="text-[10px] text-[#8b949e] uppercase tracking-widest font-semibold">Recent Tasks</span>
+    <button @click="showHistory = !showHistory" class="text-[11px] text-[#8b949e] hover:text-[#c9d1d9]" x-text="showHistory ? 'Hide' : 'Show'"></button>
+  </div>
+  <div x-show="showHistory" class="overflow-y-auto" style="max-height: 120px;">
+    <table class="w-full text-xs">
+      <thead>
+        <tr class="text-[#8b949e] text-[10px] uppercase">
+          <th class="text-left px-4 py-1.5 font-normal">Project</th>
+          <th class="text-left px-4 py-1.5 font-normal">Task</th>
+          <th class="text-left px-4 py-1.5 font-normal">Duration</th>
+          <th class="text-left px-4 py-1.5 font-normal">Status</th>
+          <th class="text-left px-4 py-1.5 font-normal">Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="t in recentTasks" :key="t.id">
+          <tr class="border-t border-[#161b22] hover:bg-[#161b22] cursor-pointer" @click="showTask(t)">
+            <td class="px-4 py-1.5 text-[#58a6ff]" x-text="t.project"></td>
+            <td class="px-4 py-1.5 text-[#c9d1d9] max-w-xs truncate" x-text="t.task"></td>
+            <td class="px-4 py-1.5 text-[#f0b429]" x-text="t.duration ? Math.round(t.duration) + 's' : '…'"></td>
+            <td class="px-4 py-1.5">
+              <span
+                :class="{
+                  'text-[#3fb950]': t.status === 'done',
+                  'text-[#58a6ff] pulse': t.status === 'running',
+                  'text-[#f85149]': t.status === 'error',
+                }"
+                x-text="t.status === 'done' ? '✓ done' : t.status === 'running' ? '● running' : '✗ error'"
+              ></span>
+            </td>
+            <td class="px-4 py-1.5 text-[#8b949e]" x-text="formatTime(t.started_at)"></td>
+          </tr>
+        </template>
+        <tr x-show="recentTasks.length === 0">
+          <td colspan="5" class="px-4 py-3 text-[#8b949e] text-center">No tasks yet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ALPINE DATA ═══════════════════════ -->
+<script>
+function hub() {
+  return {
+    projects: [],
+    selectedProject: '',
+    submitProject: '',
+    submitTask: '',
+    feedEvents: [],
+    recentTasks: [],
+    chatMessages: [],
+    chatInput: '',
+    chatProject: '',
+    runningTask: null,
+    runningStart: null,
+    runningElapsed: '',
+    autoScroll: true,
+    showHistory: true,
+    lastTaskSummary: null,
+    _sseLastId: 0,
+    _tickerInterval: null,
+    _prevStatus: null,
+
+    async init() {
+      await this.loadProjects()
+      await this.loadTasks()
+      this.connectSSE()
+      this._tickerInterval = setInterval(() => this.updateElapsed(), 1000)
+    },
+
+    async loadProjects() {
+      const r = await fetch('/api/projects').then(r => r.json()).catch(() => [])
+      this.projects = r
+      if (r.length && !this.submitProject) {
+        this.submitProject = r[0].name
+        this.selectedProject = r[0].name
+      }
+    },
+
+    async loadTasks() {
+      this.recentTasks = await fetch('/api/tasks').then(r => r.json()).catch(() => [])
+    },
+
+    connectSSE() {
+      const url = `/api/live?since=${this._sseLastId}`
+      const es = new EventSource(url)
+
+      es.onmessage = (e) => {
+        const ev = JSON.parse(e.data)
+        this._sseLastId = ev.id
+        this.feedEvents.push(ev)
+        if (this.feedEvents.length > 300) this.feedEvents.splice(0, 100)
+        if (this.autoScroll) this.$nextTick(() => {
+          const feed = this.$refs.feed
+          if (feed) feed.scrollTop = feed.scrollHeight
+        })
+      }
+
+      es.addEventListener('status', (e) => {
+        const data = JSON.parse(e.data)
+        const wasRunning = !!this.runningTask
+        this.runningTask = data.running || null
+
+        if (this.runningTask && !wasRunning) {
+          // Task just started
+          this.runningStart = Date.now()
+          this.chatProject = this.runningTask.project
+          this.loadTasks()
+        }
+        if (!this.runningTask && wasRunning) {
+          // Task just finished
+          this.runningStart = null
+          this.runningElapsed = ''
+          this.loadTasks()
+          this.buildTaskSummary()
+        }
+
+        // Refresh project active status periodically
+        this.projects = this.projects.map(p => ({
+          ...p,
+          active: this.runningTask && this.runningTask.project === p.name
+        }))
+      })
+
+      es.onerror = () => {
+        es.close()
+        setTimeout(() => this.connectSSE(), 3000)
+      }
+    },
+
+    updateElapsed() {
+      if (this.runningStart) {
+        const s = Math.floor((Date.now() - this.runningStart) / 1000)
+        const m = Math.floor(s / 60)
+        this.runningElapsed = `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`
+      }
+    },
+
+    selectProject(name) {
+      this.selectedProject = name
+      this.submitProject = name
+      if (!this.runningTask) this.chatProject = name
+    },
+
+    async runTask() {
+      const task = this.submitTask.trim()
+      if (!task || !this.submitProject || this.runningTask) return
+      this.submitTask = ''
+      const r = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({project: this.submitProject, task})
+      }).then(r => r.json()).catch(e => ({error: String(e)}))
+      if (r.error) alert(r.error)
+    },
+
+    async sendMessage() {
+      const text = this.chatInput.trim()
+      if (!text) return
+      this.chatInput = ''
+      const project = this.chatProject || this.selectedProject
+      const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+      this.chatMessages.push({id: Date.now(), role: 'user', text, time: now, project})
+      this.$nextTick(() => {
+        const el = this.$refs.chatScroll
+        if (el) el.scrollTop = el.scrollHeight
+      })
+      const r = await fetch('/api/message', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({project, text})
+      }).then(r => r.json()).catch(() => ({error: 'send failed'}))
+      if (r.error) {
+        this.chatMessages.push({id: Date.now()+1, role: 'hub', text: `⚠ ${r.error}`, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})})
+      } else {
+        this.chatMessages.push({id: Date.now()+1, role: 'hub', text: '✓ Message delivered — orchestrator will pick it up between agent calls.', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})})
+      }
+      this.$nextTick(() => {
+        const el = this.$refs.chatScroll
+        if (el) el.scrollTop = el.scrollHeight
+      })
+    },
+
+    buildTaskSummary() {
+      // Aggregate agent_done events from the feed
+      const agentTimes = {}
+      const agentCalls = {}
+      for (const e of this.feedEvents) {
+        if (e.kind === 'agent_done' && e.agent) {
+          agentTimes[e.agent] = (agentTimes[e.agent] || 0) + (e.duration || 0)
+          agentCalls[e.agent] = (agentCalls[e.agent] || 0) + 1
+        }
+      }
+      const summary = Object.entries(agentTimes).map(([agent, total]) => ({
+        agent, total, calls: agentCalls[agent]
+      })).sort((a,b) => b.total - a.total)
+      this.lastTaskSummary = summary.length ? summary : null
+    },
+
+    clearFeed() {
+      this.feedEvents = []
+      this.lastTaskSummary = null
+    },
+
+    showTask(t) {
+      // Could open a modal — for now just select the project
+      this.selectProject(t.project)
+    },
+
+    agentColor(agent) {
+      const colors = {
+        coder:      '#22d3ee',
+        researcher: '#60a5fa',
+        analyst:    '#c084fc',
+        marketer:   '#4ade80',
+        designer:   '#fbbf24',
+        sales:      '#f87171',
+        'file-ops': '#94a3b8',
+      }
+      return colors[agent] || '#8b949e'
+    },
+
+    formatElapsed(secs) {
+      if (secs == null) return '?'
+      const m = Math.floor(secs / 60)
+      const s = Math.floor(secs % 60)
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    },
+
+    formatTime(ts) {
+      if (!ts) return ''
+      return new Date(ts * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+    },
+  }
+}
+</script>
+</body>
+</html>

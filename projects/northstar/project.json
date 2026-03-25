@@ -1,0 +1,7 @@
+{
+  "description": "Solana DEX arbitrage bot — monitors SOL/USDC across Raydium, Orca, Jupiter",
+  "workspace": "/home/user/northstar",
+  "tech_stack": ["Python", "Solana", "FastAPI", "Rich"],
+  "tags": ["trading", "defi", "bot", "solana"],
+  "created": "2026-03-25"
+}
