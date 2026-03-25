@@ -201,6 +201,31 @@ Edit `dashboard/index.html` directly — no build step, uses CDN assets.
 
 ---
 
+## Security Notes (Public Repo)
+
+### What is intentionally NOT committed
+| File/Pattern | Reason |
+|---|---|
+| `.env` | Contains `ANTHROPIC_API_KEY` — use `.env.example` as template |
+| `*.db`, `*.db-shm`, `*.db-wal` | `hub_events.db` holds full task history with results |
+| `**/memory/tasks.md` | Auto-generated task logs; accumulate sensitive work details |
+| `**/memory/inbox.md` | Ephemeral mid-task messages; may contain sensitive prompts |
+| `.venv/` | Local virtual environment |
+
+### What IS committed but warrants care
+- `projects/*/project.json` — contains absolute workspace paths (`/home/user/...`). Avoid putting sensitive directory names in project names/paths.
+- `projects/*/memory/knowledge.md`, `sales.md`, `marketing.md` — these accumulate agent-written insights over time. Review before pushing if they contain proprietary strategy.
+
+### API Key
+Never hardcode `ANTHROPIC_API_KEY`. Always load from environment:
+```python
+import os
+api_key = os.environ["ANTHROPIC_API_KEY"]
+```
+Copy `.env.example` → `.env` and fill in the key. The `.env` file is gitignored.
+
+---
+
 ## Branch
 
 Active development branch: `claude/github-repo-selection-r9dFu`
