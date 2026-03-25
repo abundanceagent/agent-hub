@@ -99,6 +99,20 @@
       </div>
     </template>
     <p x-show="projects.length === 0" class="text-[11px] text-[#8b949e] px-1">No projects yet.<br>Create one in the terminal.</p>
+
+    <!-- Agents -->
+    <p class="text-[10px] text-[#8b949e] uppercase tracking-widest font-semibold px-1 mt-3 mb-1">Agents</p>
+    <div class="flex flex-col gap-1">
+      <template x-for="a in agents" :key="a.name">
+        <div class="flex items-center gap-2 px-2 py-1.5 rounded border border-[#21262d] bg-[#0d1117]">
+          <span class="w-2 h-2 rounded-full flex-shrink-0" :style="`background: ${agentColor(a.name)}`"></span>
+          <div>
+            <span class="text-[11px] font-semibold" :style="`color: ${agentColor(a.name)}`" x-text="a.name"></span>
+            <p class="text-[10px] text-[#8b949e] leading-tight" x-text="a.role"></p>
+          </div>
+        </div>
+      </template>
+    </div>
   </aside>
 
   <!-- ── CENTRE: Live Feed ── -->
@@ -121,8 +135,10 @@
       class="flex-1 overflow-y-auto p-3 flex flex-col gap-0.5 font-mono"
     >
       <template x-if="feedEvents.length === 0">
-        <div class="flex items-center justify-center h-full text-[#8b949e] text-sm">
-          Waiting for activity…
+        <div class="flex flex-col items-center justify-center h-full gap-3 text-[#8b949e]">
+          <span class="text-2xl">⬡</span>
+          <p class="text-sm font-semibold text-[#c9d1d9]">Ready</p>
+          <p class="text-xs text-center leading-relaxed max-w-xs">Select a project, type a task above, and press Run.<br>Your 7 agents will get to work.</p>
         </div>
       </template>
 
@@ -287,6 +303,15 @@
 <script>
 function hub() {
   return {
+    agents: [
+      { name: 'coder',      role: 'Write, debug & refactor code' },
+      { name: 'researcher', role: 'Web search & fact-checking' },
+      { name: 'analyst',    role: 'Data analysis & reasoning' },
+      { name: 'marketer',   role: 'Content, SEO & strategy' },
+      { name: 'designer',   role: 'UI/UX & front-end code' },
+      { name: 'sales',      role: 'Outreach & pipeline' },
+      { name: 'file-ops',   role: 'File org & bulk transforms' },
+    ],
     projects: [],
     selectedProject: '',
     submitProject: '',
