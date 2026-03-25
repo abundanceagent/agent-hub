@@ -23,6 +23,10 @@ from project import Project
 app = FastAPI(title="Agent Hub")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+@app.on_event("startup")
+async def startup():
+    ev.init_db()
+
 DASHBOARD_HTML = Path(__file__).parent / "dashboard" / "index.html"
 
 
