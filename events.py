@@ -10,7 +10,7 @@ import sqlite3
 import time
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "hub_events.db"
+DB_PATH = Path(__file__).resolve().parent / "hub_events.db"
 
 
 def _conn() -> sqlite3.Connection:

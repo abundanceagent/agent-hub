@@ -10,6 +10,9 @@ echo "  Agent Hub — Starting up"
 echo "═══════════════════════════════════════"
 echo ""
 
+# Always run from the directory containing this script
+cd "$(dirname "$0")"
+
 # Find Python 3.10+
 PYTHON=""
 for cmd in python3.13 python3.12 python3.11 python3.10; do
