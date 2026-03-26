@@ -14,7 +14,9 @@ DB_PATH = Path(__file__).resolve().parent / "hub_events.db"
 
 
 def _conn() -> sqlite3.Connection:
-    c = sqlite3.connect(DB_PATH, check_same_thread=False)
+    # Ensure parent directory exists and use explicit string path
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    c = sqlite3.connect(str(DB_PATH), check_same_thread=False)
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA journal_mode=WAL")   # allow concurrent reads + writes
     return c
@@ -112,36 +114,48 @@ def add_event(
 # ---------------------------------------------------------------------------
 
 def get_tasks(limit: int = 30) -> list[dict]:
-    with _conn() as c:
-        rows = c.execute(
-            "SELECT * FROM tasks ORDER BY started_at DESC LIMIT ?", (limit,)
-        ).fetchall()
-        return [dict(r) for r in rows]
+    try:
+        with _conn() as c:
+            rows = c.execute(
+                "SELECT * FROM tasks ORDER BY started_at DESC LIMIT ?", (limit,)
+            ).fetchall()
+            return [dict(r) for r in rows]
+    except Exception:
+        return []
 
 
 def get_running_task() -> dict | None:
-    with _conn() as c:
-        row = c.execute(
-            "SELECT * FROM tasks WHERE status='running' ORDER BY started_at DESC LIMIT 1"
-        ).fetchone()
-        return dict(row) if row else None
+    try:
+        with _conn() as c:
+            row = c.execute(
+                "SELECT * FROM tasks WHERE status='running' ORDER BY started_at DESC LIMIT 1"
+            ).fetchone()
+            return dict(row) if row else None
+    except Exception:
+        return None
 
 
 def get_events_since(since_id: int, limit: int = 200) -> list[dict]:
-    with _conn() as c:
-        rows = c.execute(
-            "SELECT * FROM events WHERE id > ? ORDER BY id LIMIT ?",
-            (since_id, limit),
-        ).fetchall()
-        return [dict(r) for r in rows]
+    try:
+        with _conn() as c:
+            rows = c.execute(
+                "SELECT * FROM events WHERE id > ? ORDER BY id LIMIT ?",
+                (since_id, limit),
+            ).fetchall()
+            return [dict(r) for r in rows]
+    except Exception:
+        return []
 
 
 def get_task_events(task_id: int) -> list[dict]:
-    with _conn() as c:
-        rows = c.execute(
-            "SELECT * FROM events WHERE task_id=? ORDER BY id", (task_id,)
-        ).fetchall()
-        return [dict(r) for r in rows]
+    try:
+        with _conn() as c:
+            rows = c.execute(
+                "SELECT * FROM events WHERE task_id=? ORDER BY id", (task_id,)
+            ).fetchall()
+            return [dict(r) for r in rows]
+    except Exception:
+        return []
 
 
 # ---------------------------------------------------------------------------
@@ -158,18 +172,24 @@ def post_message(project: str, text: str) -> int:
 
 
 def get_messages(project: str, unread_only: bool = False) -> list[dict]:
-    with _conn() as c:
-        q = "SELECT * FROM messages WHERE project=?"
-        if unread_only:
-            q += " AND read=0"
-        q += " ORDER BY created_at DESC LIMIT 50"
-        rows = c.execute(q, (project,)).fetchall()
-        return [dict(r) for r in rows]
+    try:
+        with _conn() as c:
+            q = "SELECT * FROM messages WHERE project=?"
+            if unread_only:
+                q += " AND read=0"
+            q += " ORDER BY created_at DESC LIMIT 50"
+            rows = c.execute(q, (project,)).fetchall()
+            return [dict(r) for r in rows]
+    except Exception:
+        return []
 
 
 def mark_messages_read(project: str) -> None:
-    with _conn() as c:
-        c.execute("UPDATE messages SET read=1 WHERE project=?", (project,))
+    try:
+        with _conn() as c:
+            c.execute("UPDATE messages SET read=1 WHERE project=?", (project,))
+    except Exception:
+        pass
 
 
 init_db()
