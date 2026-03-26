@@ -13,6 +13,19 @@ echo ""
 # Always run from the directory containing this script
 cd "$(dirname "$0")"
 
+# Load .env if it exists
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+    echo "Loaded .env"
+fi
+
+# Check API key
+if [ -z "$ANTHROPIC_API_KEY" ]; then
+    echo "ERROR: ANTHROPIC_API_KEY is not set."
+    echo "Create a .env file with: ANTHROPIC_API_KEY=sk-ant-..."
+    exit 1
+fi
+
 # Find Python 3.10+
 PYTHON=""
 for cmd in python3.13 python3.12 python3.11 python3.10; do
@@ -41,7 +54,7 @@ PYTHON="$VENV_DIR/bin/python"
 PIP="$VENV_DIR/bin/pip"
 
 echo "Checking dependencies..."
-$PIP install -q anthropic claude-agent-sdk fastapi "uvicorn[standard]" rich anyio
+$PIP install -q anthropic claude-agent-sdk fastapi "uvicorn[standard]" rich anyio python-dotenv
 
 echo "Dependencies OK"
 echo ""
