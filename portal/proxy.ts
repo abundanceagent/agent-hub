@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes
-  if (pathname === '/login' || pathname === '/set-password' || pathname.startsWith('/auth/')) {
+  if (pathname === '/login' || pathname === '/set-password' || pathname.startsWith('/auth/') || pathname.startsWith('/api/')) {
     if (user) {
       // Redirect logged-in users away from login
       const { data: profile } = await supabase

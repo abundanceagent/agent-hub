@@ -45,5 +45,5 @@ export async function GET() {
   })
   if (signInError) return NextResponse.json({ step: 'signin', error: signInError.message }, { status: 500 })
 
-  return NextResponse.json({ ok: true, message: 'Signed in — now go to /stock' })
+  return response
 }
