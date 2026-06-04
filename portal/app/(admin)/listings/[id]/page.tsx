@@ -70,7 +70,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
             {listing.estate && <p className="text-slate-500">{listing.estate}</p>}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <PdfButton />
+            <PdfButton listing={listing} />
             {isAdminOrTeam && (
               <Link
                 href={`/listings/${listing.id}/edit`}
