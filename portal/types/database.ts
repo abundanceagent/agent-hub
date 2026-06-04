@@ -124,6 +124,7 @@ export type Database = {
           house_design?: string | null
           house_sqm?: number | null
           build_price?: number | null
+          total_package?: number | null
           weekly_rent_estimate?: number | null
           facade_image_url?: string | null
           floor_plan_image_url?: string | null
@@ -141,6 +142,7 @@ export type Database = {
           house_design?: string | null
           house_sqm?: number | null
           build_price?: number | null
+          total_package?: number | null
           weekly_rent_estimate?: number | null
           facade_image_url?: string | null
           floor_plan_image_url?: string | null
