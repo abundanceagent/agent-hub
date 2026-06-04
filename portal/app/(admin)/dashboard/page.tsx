@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { formatPrice, formatSqm, statusColor } from '@/lib/utils'
 import type { Listing } from '@/types/database'
 import FilterBar from './FilterBar'
@@ -11,7 +11,7 @@ interface PageProps {
 
 export default async function DashboardPage({ searchParams }: PageProps) {
   const params = await searchParams
-  const supabase = await createClient()
+  const supabase = await createServiceClient()
 
   // Fetch all listings
   let query = supabase.from('listings').select('*').order('created_at', { ascending: false })

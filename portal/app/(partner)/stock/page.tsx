@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { formatPrice, formatSqm, statusColor } from '@/lib/utils'
-import type { Profile, Corridor, ListingStatus } from '@/types/database'
+import type { Corridor, ListingStatus } from '@/types/database'
 import StockFilters from './StockFilters'
 import PrintButton from './PrintButton'
 
@@ -12,17 +12,8 @@ interface PageProps {
 export default async function StockPage({ searchParams }: PageProps) {
   const { corridor, status, search } = await searchParams
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user!.id)
-    .single()
-
-  const p = profile as Profile | null
-  const showPrices = p?.show_prices ?? false
+  const supabase = await createServiceClient()
+  const showPrices = true
 
   let query = supabase.from('listings_partner_view').select('*')
 
