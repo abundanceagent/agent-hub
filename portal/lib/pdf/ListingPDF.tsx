@@ -146,6 +146,7 @@ interface Props {
 export function ListingPDF({ listing, generatedDate }: Props) {
   const statusColors: Record<string, { bg: string; text: string }> = {
     'Available': { bg: '#f0fdf4', text: '#15803d' },
+    'Hold': { bg: '#eff6ff', text: '#1d4ed8' },
     'Under contract': { bg: '#fffbeb', text: '#b45309' },
     'Sold': { bg: '#fef2f2', text: '#b91c1c' },
   }
@@ -185,13 +186,13 @@ export function ListingPDF({ listing, generatedDate }: Props) {
           <Text style={{ color: sc.text, fontSize: 9 }}>{listing.status}</Text>
         </View>
 
-        {/* Facade image */}
-        {listing.facade_image_url && (
+        {/* Facade image (skip PDFs — react-pdf can't embed them) */}
+        {listing.facade_image_url && !listing.facade_image_url.toLowerCase().endsWith('.pdf') && (
           <Image src={listing.facade_image_url} style={styles.image} />
         )}
 
-        {/* Floor plan */}
-        {listing.floor_plan_image_url && (
+        {/* Floor plan (skip PDFs — react-pdf can't embed them) */}
+        {listing.floor_plan_image_url && !listing.floor_plan_image_url.toLowerCase().endsWith('.pdf') && (
           <>
             <Text style={styles.sectionTitle}>Floor Plan</Text>
             <Image src={listing.floor_plan_image_url} style={styles.floorPlanImage} />
