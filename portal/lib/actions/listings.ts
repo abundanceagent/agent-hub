@@ -24,7 +24,6 @@ export async function createListing(formData: FormData) {
   const weekly_rent_estimate = formData.get('weekly_rent_estimate') ? Number(formData.get('weekly_rent_estimate')) : null
   const notes = (formData.get('notes') as string) || null
 
-  const total_package = (land_price && build_price) ? land_price + build_price : null
 
   const { data: listing, error } = await service.from('listings').insert({
     suburb,
@@ -37,7 +36,6 @@ export async function createListing(formData: FormData) {
     house_design,
     house_sqm,
     build_price,
-    total_package,
     weekly_rent_estimate,
     notes,
     created_by: user.id,
@@ -94,7 +92,6 @@ export async function updateListing(id: string, formData: FormData) {
   const weekly_rent_estimate = formData.get('weekly_rent_estimate') ? Number(formData.get('weekly_rent_estimate')) : null
   const notes = (formData.get('notes') as string) || null
 
-  const total_package = (land_price && build_price) ? land_price + build_price : null
 
   // Handle image uploads
   const facadeFile = formData.get('facade_image') as File | null
@@ -121,7 +118,6 @@ export async function updateListing(id: string, formData: FormData) {
     house_design,
     house_sqm,
     build_price,
-    total_package,
     weekly_rent_estimate,
     notes,
     ...(facade_image_url !== undefined ? { facade_image_url } : {}),
