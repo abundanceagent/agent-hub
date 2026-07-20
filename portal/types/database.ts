@@ -1,7 +1,7 @@
 // Named types for use throughout the app
 export type Role = 'admin' | 'team' | 'partner'
 export type Corridor = 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast'
-export type ListingStatus = 'Available' | 'Under contract' | 'Sold'
+export type ListingStatus = 'Available' | 'Hold' | 'Under contract' | 'Sold'
 
 export type Profile = {
   id: string
@@ -97,7 +97,7 @@ export type Database = {
           suburb: string
           estate: string | null
           corridor: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
-          status: 'Available' | 'Under contract' | 'Sold'
+          status: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm: number | null
           land_price: number | null
           builder: string | null
@@ -117,7 +117,7 @@ export type Database = {
           suburb: string
           estate?: string | null
           corridor?: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
-          status?: 'Available' | 'Under contract' | 'Sold'
+          status?: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm?: number | null
           land_price?: number | null
           builder?: string | null
@@ -135,7 +135,7 @@ export type Database = {
           suburb?: string
           estate?: string | null
           corridor?: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
-          status?: 'Available' | 'Under contract' | 'Sold'
+          status?: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm?: number | null
           land_price?: number | null
           builder?: string | null
@@ -176,7 +176,7 @@ export type Database = {
           suburb: string
           estate: string | null
           corridor: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
-          status: 'Available' | 'Under contract' | 'Sold'
+          status: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm: number | null
           land_price: number | null
           builder: string | null
