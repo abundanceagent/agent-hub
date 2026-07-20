@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { createServiceClient } from '@/lib/supabase/server'
-import { formatPrice, formatSqm, statusColor } from '@/lib/utils'
+import { formatPrice, formatSqm, statusColor, isPdfUrl } from '@/lib/utils'
 import type { Corridor, ListingStatus } from '@/types/database'
 import StockFilters from './StockFilters'
 import PrintButton from './PrintButton'
@@ -62,7 +62,7 @@ export default async function StockPage({ searchParams }: PageProps) {
             <div key={listing.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               {/* Facade image */}
               <div className="h-48 bg-slate-100 relative overflow-hidden">
-                {listing.facade_image_url ? (
+                {listing.facade_image_url && !isPdfUrl(listing.facade_image_url) ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={listing.facade_image_url}

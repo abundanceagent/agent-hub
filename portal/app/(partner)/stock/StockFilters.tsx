@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 import type { Corridor, ListingStatus } from '@/types/database'
 
 const CORRIDORS: Corridor[] = ['Moreton Bay', 'Ipswich', 'Sunshine Coast', 'Logan', 'Gold Coast']
-const STATUSES: ListingStatus[] = ['Available', 'Under contract', 'Sold']
+const STATUSES: ListingStatus[] = ['Available', 'Hold', 'Under contract', 'Sold']
 
 export default function StockFilters() {
   const router = useRouter()
