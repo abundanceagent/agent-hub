@@ -29,7 +29,7 @@ export async function createListing(formData: FormData) {
     suburb,
     estate: estate || null,
     corridor: corridor as 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null,
-    status: status as 'Available' | 'Under contract' | 'Sold',
+    status: status as 'Available' | 'Hold' | 'Under contract' | 'Sold',
     land_size_sqm,
     land_price,
     builder,
@@ -111,7 +111,7 @@ export async function updateListing(id: string, formData: FormData) {
     suburb,
     estate,
     corridor: corridor as 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null,
-    status: status as 'Available' | 'Under contract' | 'Sold',
+    status: status as 'Available' | 'Hold' | 'Under contract' | 'Sold',
     land_size_sqm,
     land_price,
     builder,
@@ -160,15 +160,20 @@ export async function uploadImage(file: File, path: string): Promise<string | nu
   const arrayBuffer = await file.arrayBuffer()
   const buffer = new Uint8Array(arrayBuffer)
 
+  // Preserve the file extension so the stored URL reflects its type (e.g. .pdf floor plans).
+  const nameExt = file.name.includes('.') ? file.name.split('.').pop()!.toLowerCase() : ''
+  const ext = nameExt || (file.type === 'application/pdf' ? 'pdf' : file.type === 'image/png' ? 'png' : 'jpg')
+  const fullPath = `${path}.${ext}`
+
   const { error } = await service.storage
     .from('listing-images')
-    .upload(path, buffer, { contentType: file.type, upsert: true })
+    .upload(fullPath, buffer, { contentType: file.type, upsert: true })
 
   if (error) {
     console.error('Image upload error:', error)
     return null
   }
 
-  const { data } = service.storage.from('listing-images').getPublicUrl(path)
+  const { data } = service.storage.from('listing-images').getPublicUrl(fullPath)
   return data.publicUrl
 }
