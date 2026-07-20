@@ -11,8 +11,24 @@ async function signOut() {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const isAdmin = true
-  const p = { name: 'Admin', email: 'admin', role: 'admin' } as Profile
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  // No profile, deactivated, or partner role → keep them out of the admin area.
+  if (!profile || !profile.is_active) redirect('/login')
+  if (profile.role === 'partner') redirect('/stock')
+
+  const p = profile as Profile
+  const isAdmin = p.role === 'admin'
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
