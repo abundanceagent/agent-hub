@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { formatPrice, formatSqm, statusColor } from '@/lib/utils'
+import { formatPrice, formatSqm, statusColor, isPdfUrl } from '@/lib/utils'
 import type { Profile, ActivityLog } from '@/types/database'
 import PdfButton from './PdfButton'
 
@@ -46,13 +46,18 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
       {/* Facade image */}
       <div className="relative h-80 bg-slate-100 mx-6 rounded-xl overflow-hidden mb-6">
-        {listing.facade_image_url ? (
+        {listing.facade_image_url && !isPdfUrl(listing.facade_image_url) ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={listing.facade_image_url}
             alt={`${listing.suburb} facade`}
             className="w-full h-full object-cover"
           />
+        ) : listing.facade_image_url ? (
+          <a href={listing.facade_image_url} target="_blank" rel="noopener noreferrer" className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-500 hover:text-slate-900">
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            <span className="text-sm font-medium">Open document (PDF)</span>
+          </a>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <svg className="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +94,12 @@ export default async function ListingDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Floor plan */}
           <div>
-            {listing.floor_plan_image_url ? (
+            {listing.floor_plan_image_url && isPdfUrl(listing.floor_plan_image_url) ? (
+              <div className="rounded-xl overflow-hidden border border-slate-200">
+                <iframe src={listing.floor_plan_image_url} title="Floor plan" className="w-full h-96 bg-white" />
+                <a href={listing.floor_plan_image_url} target="_blank" rel="noopener noreferrer" className="block text-center text-sm text-slate-600 underline py-2">Open floor plan (PDF)</a>
+              </div>
+            ) : listing.floor_plan_image_url ? (
               <div className="rounded-xl overflow-hidden border border-slate-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
