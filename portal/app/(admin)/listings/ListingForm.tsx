@@ -2,9 +2,10 @@
 
 import { useRef } from 'react'
 import type { Listing } from '@/types/database'
+import { isPdfUrl } from '@/lib/utils'
 
 const CORRIDORS = ['Moreton Bay', 'Ipswich', 'Sunshine Coast', 'Logan', 'Gold Coast'] as const
-const STATUSES = ['Available', 'Under contract', 'Sold'] as const
+const STATUSES = ['Available', 'Hold', 'Under contract', 'Sold'] as const
 
 interface ListingFormProps {
   listing?: Listing | null
@@ -84,7 +85,7 @@ export default function ListingForm({
               type="number"
               name="land_price"
               min={0}
-              step={1000}
+              step={100}
               defaultValue={listing?.land_price ?? ''}
               className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
             />
@@ -95,7 +96,7 @@ export default function ListingForm({
               type="number"
               name="build_price"
               min={0}
-              step={1000}
+              step={100}
               defaultValue={listing?.build_price ?? ''}
               className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
             />
@@ -165,30 +166,42 @@ export default function ListingForm({
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">Facade image</label>
             {listing?.facade_image_url && (
-              <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 h-32">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={listing.facade_image_url} alt="Current facade" className="w-full h-full object-cover" />
-              </div>
+              isPdfUrl(listing.facade_image_url) ? (
+                <a href={listing.facade_image_url} target="_blank" rel="noopener noreferrer" className="mb-2 flex items-center gap-2 text-sm text-slate-600 underline">
+                  View current file (PDF)
+                </a>
+              ) : (
+                <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 h-32">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={listing.facade_image_url} alt="Current facade" className="w-full h-full object-cover" />
+                </div>
+              )
             )}
             <input
               type="file"
               name="facade_image"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/webp,application/pdf"
               className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">Floor plan image</label>
             {listing?.floor_plan_image_url && (
-              <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 h-32">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={listing.floor_plan_image_url} alt="Current floor plan" className="w-full h-full object-contain bg-white" />
-              </div>
+              isPdfUrl(listing.floor_plan_image_url) ? (
+                <a href={listing.floor_plan_image_url} target="_blank" rel="noopener noreferrer" className="mb-2 flex items-center gap-2 text-sm text-slate-600 underline">
+                  View current floor plan (PDF)
+                </a>
+              ) : (
+                <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 h-32">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={listing.floor_plan_image_url} alt="Current floor plan" className="w-full h-full object-contain bg-white" />
+                </div>
+              )
             )}
             <input
               type="file"
               name="floor_plan_image"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/webp,application/pdf"
               className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
             />
           </div>
