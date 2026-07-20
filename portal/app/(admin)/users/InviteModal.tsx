@@ -13,7 +13,11 @@ export default function InviteModal() {
     setLoading(true)
     setError(null)
     try {
-      await inviteUser(formData)
+      const result = await inviteUser(formData)
+      if (result?.error) {
+        setError(result.error)
+        return
+      }
       setOpen(false)
       formRef.current?.reset()
     } catch (e) {
