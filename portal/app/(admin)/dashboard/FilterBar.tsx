@@ -4,7 +4,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 
 const CORRIDORS = ['Moreton Bay', 'Ipswich', 'Sunshine Coast', 'Logan', 'Gold Coast']
-const STATUSES = ['Available', 'Under contract', 'Sold']
+const STATUSES = ['Available', 'Hold', 'Under contract', 'Sold']
 
 export default function FilterBar() {
   const router = useRouter()

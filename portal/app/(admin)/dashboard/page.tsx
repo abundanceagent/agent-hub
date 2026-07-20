@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/server'
-import { formatPrice, formatSqm, statusColor } from '@/lib/utils'
+import { formatPrice, formatSqm, statusColor, isPdfUrl } from '@/lib/utils'
 import type { Listing } from '@/types/database'
 import FilterBar from './FilterBar'
 
@@ -33,6 +33,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const { data: allListings } = await supabase.from('listings').select('status')
   const total = allListings?.length ?? 0
   const available = allListings?.filter(l => l.status === 'Available').length ?? 0
+  const hold = allListings?.filter(l => l.status === 'Hold').length ?? 0
   const underContract = allListings?.filter(l => l.status === 'Under contract').length ?? 0
   const sold = allListings?.filter(l => l.status === 'Sold').length ?? 0
 
@@ -56,7 +57,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total</p>
           <p className="text-3xl font-bold text-slate-900 mt-1">{total}</p>
@@ -64,6 +65,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Available</p>
           <p className="text-3xl font-bold text-green-600 mt-1">{available}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <p className="text-xs font-medium text-blue-600 uppercase tracking-wide">Hold</p>
+          <p className="text-3xl font-bold text-blue-600 mt-1">{hold}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <p className="text-xs font-medium text-amber-600 uppercase tracking-wide">Under Contract</p>
@@ -103,7 +108,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             >
               {/* Image */}
               <div className="relative h-44 bg-slate-100">
-                {listing.facade_image_url ? (
+                {listing.facade_image_url && !isPdfUrl(listing.facade_image_url) ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={listing.facade_image_url}
