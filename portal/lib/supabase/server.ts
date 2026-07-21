@@ -1,7 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
 
+// Session-aware client bound to the signed-in user's cookies (respects RLS).
 export async function createClient() {
   const cookieStore = await cookies()
   return createServerClient<Database>(
@@ -22,22 +24,12 @@ export async function createClient() {
   )
 }
 
+// True service-role client: no cookies/session, so it authenticates with the
+// service_role key and bypasses RLS for trusted server-side writes (DB + Storage).
 export async function createServiceClient() {
-  const cookieStore = await cookies()
-  return createServerClient<Database>(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll() },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {}
-        },
-      },
-    }
+    { auth: { autoRefreshToken: false, persistSession: false } }
   )
 }
