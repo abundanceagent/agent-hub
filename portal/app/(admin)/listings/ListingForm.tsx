@@ -83,6 +83,7 @@ export default function ListingForm({
             <label className="block text-xs font-medium text-slate-700 mb-1">Land price ($)</label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               name="land_price"
               min={0}
               step={100}
@@ -94,6 +95,7 @@ export default function ListingForm({
             <label className="block text-xs font-medium text-slate-700 mb-1">Build price ($)</label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               name="build_price"
               min={0}
               step={100}
@@ -105,6 +107,7 @@ export default function ListingForm({
             <label className="block text-xs font-medium text-slate-700 mb-1">Weekly rent estimate ($)</label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               name="weekly_rent_estimate"
               min={0}
               defaultValue={listing?.weekly_rent_estimate ?? ''}
@@ -122,6 +125,7 @@ export default function ListingForm({
             <label className="block text-xs font-medium text-slate-700 mb-1">Land size (sqm)</label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               name="land_size_sqm"
               min={0}
               defaultValue={listing?.land_size_sqm ?? ''}
@@ -132,6 +136,7 @@ export default function ListingForm({
             <label className="block text-xs font-medium text-slate-700 mb-1">House size (sqm)</label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               name="house_sqm"
               min={0}
               defaultValue={listing?.house_sqm ?? ''}
