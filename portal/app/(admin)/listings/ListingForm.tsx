@@ -223,22 +223,21 @@ export default function ListingForm({
       {/* Actions */}
       <div className="flex items-center justify-between gap-4">
         {isAdmin && deleteAction ? (
-          <form action={deleteAction}>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors"
-              onClick={(e) => {
-                if (!confirm('Delete this listing? This cannot be undone.')) {
-                  e.preventDefault()
-                }
-              }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Delete listing
-            </button>
-          </form>
+          <button
+            type="submit"
+            formAction={deleteAction}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors"
+            onClick={(e) => {
+              if (!confirm('Delete this listing? This cannot be undone.')) {
+                e.preventDefault()
+              }
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete listing
+          </button>
         ) : <div />}
 
         <button
