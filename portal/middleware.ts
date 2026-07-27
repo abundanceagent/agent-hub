@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/types/database'
 
 // Paths reachable without a session.
-const PUBLIC_PATHS = ['/login', '/set-password', '/auth/callback']
+const PUBLIC_PATHS = ['/', '/login', '/set-password', '/auth/callback']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
