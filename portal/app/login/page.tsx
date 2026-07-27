@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -8,11 +8,23 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  // If already signed in, skip the login form.
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
+      router.replace(profile?.role === 'partner' ? '/stock' : '/dashboard')
+    })
+  }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setNotice(null)
     setLoading(true)
 
     const supabase = createClient()
@@ -25,13 +37,30 @@ export default function LoginPage() {
     }
 
     if (data.user) {
-      // Update last_login
       await supabase.from('profiles').update({ last_login: new Date().toISOString() }).eq('id', data.user.id)
-
       const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single()
       router.push(profile?.role === 'partner' ? '/stock' : '/dashboard')
       router.refresh()
     }
+  }
+
+  async function handleReset() {
+    setError(null)
+    setNotice(null)
+    if (!email) {
+      setError('Enter your email address above first, then choose “Forgot password”.')
+      return
+    }
+    const supabase = createClient()
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const { error: e } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/set-password`,
+    })
+    if (e) {
+      setError(e.message)
+      return
+    }
+    setNotice('Password reset link sent. Check your email to set a new password.')
   }
 
   return (
@@ -62,7 +91,12 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-slate-700">Password</label>
+                <button type="button" onClick={handleReset} className="text-xs font-medium text-slate-500 hover:text-slate-900">
+                  Forgot password?
+                </button>
+              </div>
               <input
                 type="password"
                 value={password}
@@ -75,9 +109,10 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-                {error}
-              </div>
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
+            )}
+            {notice && (
+              <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">{notice}</div>
             )}
 
             <button
