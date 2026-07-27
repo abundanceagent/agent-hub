@@ -104,7 +104,10 @@ export default function Home() {
               <a href="#partners" className="px-7 py-3 rounded-full text-sm tracking-wide border" style={{ borderColor: GOLD, color: GOLD }}>Become a referral partner</a>
             </div>
           </div>
-          <div className="h-[420px] rounded-2xl shadow-xl" style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #33454f 60%, ${GOLD} 160%)` }} />
+          <div className="h-[420px] rounded-2xl shadow-xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/hero-facade.jpg" alt="BOLD Invest home facade" className="w-full h-full object-cover" />
+          </div>
         </section>
 
         {/* Intro */}
