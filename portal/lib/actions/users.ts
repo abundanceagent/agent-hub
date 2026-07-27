@@ -41,9 +41,16 @@ export async function inviteUser(formData: FormData): Promise<{ error?: string }
 
   const service = await createServiceClient()
 
-  // Create the auth user + send the invite email.
+  const site =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    'https://agent-hub-ruddy-seven.vercel.app'
+
+  // Create the auth user + send the invite email. redirectTo lands them on
+  // /set-password (a public route that handles the token) so no Site URL hack is needed.
   const { data: invited, error } = await service.auth.admin.inviteUserByEmail(email, {
     data: { name, role },
+    redirectTo: `${site}/set-password`,
   })
 
   if (error || !invited?.user) {
