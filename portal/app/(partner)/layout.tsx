@@ -27,22 +27,19 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   const p = profile as Profile
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
+    <div className="min-h-screen bg-[#f5f2ec]">
+      <header className="bg-[#1e2a32]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xs font-bold">IS</span>
-              </div>
-              <span className="font-semibold text-slate-900">Investment Stock Portal</span>
-            </div>
+            <span className="font-display text-xl tracking-wide text-white">
+              BOLD <span className="text-[#b08d57]">INVEST</span>
+            </span>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-500">{p?.email}</span>
+              <span className="text-sm text-white/60">{p?.email}</span>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
                 >
                   Sign out
                 </button>
