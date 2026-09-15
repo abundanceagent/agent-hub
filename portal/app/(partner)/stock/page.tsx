@@ -90,6 +90,9 @@ export default async function StockPage({ searchParams }: PageProps) {
                   </span>
                 </div>
 
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#efe9dd] text-[#7a5c2e] mb-3 mr-1">
+                  {listing.package_type ?? 'House & Land'}
+                </span>
                 {listing.corridor && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 mb-3">
                     {listing.corridor}
