@@ -4,6 +4,16 @@ export type Corridor = 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 
 export type ListingStatus = 'Available' | 'Hold' | 'Under contract' | 'Sold'
 export const PACKAGE_TYPES = ['House & Land', 'Dual Key', 'Dual Income', 'Rooming / Co-living', 'Townhouse', 'Other'] as const
 export type PackageType = typeof PACKAGE_TYPES[number]
+export const FILE_CATEGORIES = ['Site Plan', 'Contract', 'Brochure', 'Price List', 'Photo', 'Other'] as const
+export type FileCategory = typeof FILE_CATEGORIES[number]
+export type ListingFile = {
+  id: string
+  listing_id: string
+  category: string
+  name: string
+  url: string
+  created_at: string
+}
 
 export type Profile = {
   id: string
@@ -171,6 +181,27 @@ export type Database = {
         }
         Update: {
           action?: string
+        }
+        Relationships: []
+      }
+      listing_files: {
+        Row: {
+          id: string
+          listing_id: string
+          category: string
+          name: string
+          url: string
+          created_at: string
+        }
+        Insert: {
+          listing_id: string
+          category: string
+          name: string
+          url: string
+        }
+        Update: {
+          category?: string
+          name?: string
         }
         Relationships: []
       }
