@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { formatPrice, formatSqm, statusColor, isPdfUrl } from '@/lib/utils'
-import type { Profile, ActivityLog } from '@/types/database'
+import type { Profile, ActivityLog, ListingFile } from '@/types/database'
 import PdfButton from './PdfButton'
+import ListingFiles from './ListingFiles'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -24,6 +25,15 @@ export default async function ListingDetailPage({ params }: PageProps) {
   const { data: listing } = await supabase.from('listings').select('*').eq('id', id).single()
 
   if (!listing) notFound()
+
+  // Documents & files
+  const svc = await createServiceClient()
+  const { data: fileRows } = await svc
+    .from('listing_files')
+    .select('*')
+    .eq('listing_id', id)
+    .order('created_at', { ascending: true })
+  const files = (fileRows ?? []) as ListingFile[]
 
   // Activity logs (admin only)
   let activityLogs: ActivityLog[] = []
@@ -182,6 +192,11 @@ export default async function ListingDetailPage({ params }: PageProps) {
             <h3 className="text-sm font-semibold text-amber-800 mb-1">Notes</h3>
             <p className="text-sm text-amber-700 whitespace-pre-wrap">{listing.notes}</p>
           </div>
+        )}
+
+        {/* Documents & files (admin/team) */}
+        {isAdminOrTeam && (
+          <ListingFiles listingId={id} files={files} canManage={isAdminOrTeam} />
         )}
 
         {/* Activity log (admin only) */}
