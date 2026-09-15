@@ -8,135 +8,73 @@ import {
 } from '@react-pdf/renderer'
 import type { Listing } from '@/types/database'
 
-function formatPrice(n: number | null | undefined): string {
+const NAVY = '#1e2a32'
+const GOLD = '#b08d57'
+const CREAM = '#f5f2ec'
+const MUTED = '#6b7280'
+const LINE = '#e6e0d4'
+
+function fmtPrice(n: number | null | undefined): string {
   if (n == null) return '—'
   return new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(n)
 }
-
-function formatSqm(n: number | null | undefined): string {
+function fmtSqm(n: number | null | undefined): string {
   if (n == null) return '—'
   return `${n.toLocaleString()} sqm`
 }
+function isPdf(u: string | null | undefined): boolean {
+  return !!u && u.toLowerCase().endsWith('.pdf')
+}
 
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    fontSize: 11,
-    paddingTop: 40,
-    paddingBottom: 60,
-    paddingHorizontal: 50,
-    color: '#0f172a',
-  },
+const s = StyleSheet.create({
+  page: { fontFamily: 'Helvetica', fontSize: 10, color: NAVY, paddingBottom: 70 },
   header: {
+    backgroundColor: NAVY,
+    paddingHorizontal: 40,
+    paddingVertical: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
   },
-  headerTitle: {
-    fontSize: 16,
-    fontFamily: 'Helvetica-Bold',
-    color: '#0f172a',
-  },
-  headerDate: {
-    fontSize: 9,
-    color: '#64748b',
-  },
-  propertyTitle: {
-    fontSize: 20,
-    fontFamily: 'Helvetica-Bold',
-    color: '#0f172a',
-    marginBottom: 4,
-  },
-  propertySubtitle: {
-    fontSize: 12,
-    color: '#64748b',
-    marginBottom: 16,
-  },
-  statusBadge: {
-    fontSize: 9,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 99,
-    backgroundColor: '#f0fdf4',
-    color: '#15803d',
-    marginBottom: 16,
-    alignSelf: 'flex-start',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    objectFit: 'cover',
-    borderRadius: 6,
-    marginBottom: 16,
-  },
-  floorPlanImage: {
-    width: '100%',
-    height: 180,
-    objectFit: 'contain',
-    borderRadius: 6,
-    marginBottom: 16,
-  },
+  brand: { fontFamily: 'Times-Bold', fontSize: 18, color: '#ffffff', letterSpacing: 1 },
+  brandGold: { color: GOLD },
+  headerRight: { fontSize: 8, color: '#c9c3b6', textTransform: 'uppercase', letterSpacing: 1 },
+  body: { paddingHorizontal: 40, paddingTop: 22 },
+  facade: { width: '100%', height: 230, objectFit: 'cover', borderRadius: 4, marginBottom: 18 },
+  title: { fontFamily: 'Times-Bold', fontSize: 24, color: NAVY },
+  subtitle: { fontSize: 12, color: MUTED, marginTop: 2, marginBottom: 12 },
+  badgeRow: { flexDirection: 'row', gap: 6, marginBottom: 18 },
+  badge: { fontSize: 8, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99, letterSpacing: 0.5 },
   sectionTitle: {
-    fontSize: 10,
-    fontFamily: 'Helvetica-Bold',
-    color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 8,
-    marginTop: 16,
+    fontSize: 9, fontFamily: 'Helvetica-Bold', color: GOLD, textTransform: 'uppercase',
+    letterSpacing: 1, marginBottom: 8, marginTop: 6,
   },
-  table: {
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 6,
-    overflow: 'hidden',
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  cell: { width: '50%', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: LINE },
+  cellLabel: { fontSize: 8, color: MUTED, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
+  cellValue: { fontSize: 11, color: NAVY },
+  totalBox: {
+    backgroundColor: CREAM, borderRadius: 6, padding: 14, marginTop: 16,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  lastRow: {
-    flexDirection: 'row',
-  },
-  cell: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  cellLabel: {
-    fontSize: 9,
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  cellValue: {
-    fontSize: 11,
-    color: '#0f172a',
-  },
-  highlightValue: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: '#0f172a',
-  },
+  totalLabel: { fontSize: 9, color: MUTED, textTransform: 'uppercase', letterSpacing: 1 },
+  totalValue: { fontFamily: 'Times-Bold', fontSize: 22, color: NAVY },
+  rentValue: { fontSize: 12, color: GOLD, fontFamily: 'Helvetica-Bold' },
+  floorPlan: { width: '100%', height: 220, objectFit: 'contain', marginTop: 6, borderWidth: 1, borderColor: LINE, borderRadius: 4 },
   footer: {
-    position: 'absolute',
-    bottom: 24,
-    left: 50,
-    right: 50,
-    textAlign: 'center',
-    fontSize: 8,
-    color: '#94a3b8',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    paddingTop: 8,
+    position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: NAVY,
+    paddingHorizontal: 40, paddingVertical: 14,
   },
+  footerBrand: { fontFamily: 'Times-Bold', fontSize: 11, color: '#ffffff', marginBottom: 4 },
+  footerLine: { fontSize: 8, color: '#c9c3b6' },
 })
+
+const statusColors: Record<string, { bg: string; fg: string }> = {
+  'Available': { bg: '#e8f3ec', fg: '#256b45' },
+  'Hold': { bg: '#eaf0f8', fg: '#1d4ed8' },
+  'Under contract': { bg: '#faf1e2', fg: '#a3671a' },
+  'Sold': { bg: '#f8ecec', fg: '#a33131' },
+}
 
 interface Props {
   listing: Listing
@@ -144,78 +82,80 @@ interface Props {
 }
 
 export function ListingPDF({ listing, generatedDate }: Props) {
-  const statusColors: Record<string, { bg: string; text: string }> = {
-    'Available': { bg: '#f0fdf4', text: '#15803d' },
-    'Hold': { bg: '#eff6ff', text: '#1d4ed8' },
-    'Under contract': { bg: '#fffbeb', text: '#b45309' },
-    'Sold': { bg: '#fef2f2', text: '#b91c1c' },
-  }
-  const sc = statusColors[listing.status] ?? { bg: '#f8fafc', text: '#475569' }
+  const sc = statusColors[listing.status] ?? { bg: '#eee', fg: NAVY }
+  const pkg = listing.package_type ?? 'House & Land'
 
   const rows = [
-    { label: 'Suburb', value: listing.suburb },
-    { label: 'Estate', value: listing.estate ?? '—' },
+    { label: 'Package type', value: pkg },
     { label: 'Corridor', value: listing.corridor ?? '—' },
-    { label: 'Land size', value: formatSqm(listing.land_size_sqm) },
-    { label: 'House size', value: formatSqm(listing.house_sqm) },
+    { label: 'Land size', value: fmtSqm(listing.land_size_sqm) },
+    { label: 'House size', value: fmtSqm(listing.house_sqm) },
     { label: 'Builder', value: listing.builder ?? '—' },
     { label: 'House design', value: listing.house_design ?? '—' },
-    { label: 'Total package', value: formatPrice(listing.total_package), highlight: true },
-    {
-      label: 'Est. weekly rent',
-      value: listing.weekly_rent_estimate != null ? `${formatPrice(listing.weekly_rent_estimate)}/wk` : '—',
-    },
-    { label: 'Status', value: listing.status },
+    { label: 'Land price', value: fmtPrice(listing.land_price) },
+    { label: 'Build price', value: fmtPrice(listing.build_price) },
   ]
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Investment Stock Portal</Text>
-          <Text style={styles.headerDate}>Generated {generatedDate}</Text>
+      <Page size="A4" style={s.page}>
+        <View style={s.header}>
+          <Text style={s.brand}>BOLD <Text style={s.brandGold}>INVEST</Text></Text>
+          <Text style={s.headerRight}>Investment Property Package</Text>
         </View>
 
-        {/* Title */}
-        <Text style={styles.propertyTitle}>{listing.suburb}</Text>
-        {listing.estate && <Text style={styles.propertySubtitle}>{listing.estate}</Text>}
+        <View style={s.body}>
+          {listing.facade_image_url && !isPdf(listing.facade_image_url) && (
+            <Image src={listing.facade_image_url} style={s.facade} />
+          )}
 
-        {/* Status */}
-        <View style={[styles.statusBadge, { backgroundColor: sc.bg }]}>
-          <Text style={{ color: sc.text, fontSize: 9 }}>{listing.status}</Text>
-        </View>
+          <Text style={s.title}>{listing.suburb}</Text>
+          {listing.estate ? <Text style={s.subtitle}>{listing.estate}</Text> : <View style={{ height: 8 }} />}
 
-        {/* Facade image (skip PDFs — react-pdf can't embed them) */}
-        {listing.facade_image_url && !listing.facade_image_url.toLowerCase().endsWith('.pdf') && (
-          <Image src={listing.facade_image_url} style={styles.image} />
-        )}
+          <View style={s.badgeRow}>
+            <Text style={[s.badge, { backgroundColor: sc.bg, color: sc.fg }]}>{listing.status}</Text>
+            <Text style={[s.badge, { backgroundColor: '#efe9dd', color: '#7a5c2e' }]}>{pkg}</Text>
+            {listing.corridor ? (
+              <Text style={[s.badge, { backgroundColor: '#eceae4', color: MUTED }]}>{listing.corridor}</Text>
+            ) : null}
+          </View>
 
-        {/* Floor plan (skip PDFs — react-pdf can't embed them) */}
-        {listing.floor_plan_image_url && !listing.floor_plan_image_url.toLowerCase().endsWith('.pdf') && (
-          <>
-            <Text style={styles.sectionTitle}>Floor Plan</Text>
-            <Image src={listing.floor_plan_image_url} style={styles.floorPlanImage} />
-          </>
-        )}
-
-        {/* Details table */}
-        <Text style={styles.sectionTitle}>Property Details</Text>
-        <View style={styles.table}>
-          {rows.map((row, i) => (
-            <View key={row.label} style={i < rows.length - 1 ? styles.row : styles.lastRow}>
-              <View style={styles.cell}>
-                <Text style={styles.cellLabel}>{row.label}</Text>
-                <Text style={row.highlight ? styles.highlightValue : styles.cellValue}>{row.value}</Text>
+          <Text style={s.sectionTitle}>Property details</Text>
+          <View style={s.grid}>
+            {rows.map((r) => (
+              <View key={r.label} style={s.cell}>
+                <Text style={s.cellLabel}>{r.label}</Text>
+                <Text style={s.cellValue}>{r.value}</Text>
               </View>
+            ))}
+          </View>
+
+          <View style={s.totalBox}>
+            <View>
+              <Text style={s.totalLabel}>Total package</Text>
+              <Text style={s.totalValue}>{fmtPrice(listing.total_package)}</Text>
             </View>
-          ))}
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={s.totalLabel}>Est. weekly rent</Text>
+              <Text style={s.rentValue}>
+                {listing.weekly_rent_estimate != null ? `${fmtPrice(listing.weekly_rent_estimate)}/wk` : '—'}
+              </Text>
+            </View>
+          </View>
+
+          {listing.floor_plan_image_url && !isPdf(listing.floor_plan_image_url) && (
+            <>
+              <Text style={[s.sectionTitle, { marginTop: 18 }]}>Floor plan</Text>
+              <Image src={listing.floor_plan_image_url} style={s.floorPlan} />
+            </>
+          )}
         </View>
 
-        {/* Footer */}
-        <Text style={styles.footer}>
-          Generated {generatedDate} · Confidential — not for distribution
-        </Text>
+        <View style={s.footer} fixed>
+          <Text style={s.footerBrand}>BOLD INVEST</Text>
+          <Text style={s.footerLine}>0407 020 122  ·  b.olsen@boldinvest.com.au  ·  71 Stapylton Street, North Lakes QLD 4509</Text>
+          <Text style={[s.footerLine, { marginTop: 3 }]}>Generated {generatedDate}  ·  Confidential — not for public distribution</Text>
+        </View>
       </Page>
     </Document>
   )
