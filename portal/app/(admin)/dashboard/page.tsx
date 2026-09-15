@@ -140,6 +140,9 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                   </span>
                 </div>
 
+                <span className="inline-block px-2 py-0.5 bg-[#efe9dd] text-[#7a5c2e] text-xs rounded-md mb-3 mr-1">
+                  {listing.package_type ?? 'House & Land'}
+                </span>
                 {listing.corridor && (
                   <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-md mb-3">
                     {listing.corridor}
