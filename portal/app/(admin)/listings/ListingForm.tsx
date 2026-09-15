@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import type { Listing } from '@/types/database'
 import { isPdfUrl } from '@/lib/utils'
+import { PACKAGE_TYPES } from '@/types/database'
 
 const CORRIDORS = ['Moreton Bay', 'Ipswich', 'Sunshine Coast', 'Logan', 'Gold Coast'] as const
 const STATUSES = ['Available', 'Hold', 'Under contract', 'Sold'] as const
@@ -70,6 +71,16 @@ export default function ListingForm({
               className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
             >
               {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Package type</label>
+            <select
+              name="package_type"
+              defaultValue={listing?.package_type ?? 'House & Land'}
+              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+            >
+              {PACKAGE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
         </div>
