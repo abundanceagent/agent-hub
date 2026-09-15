@@ -15,6 +15,7 @@ export async function createListing(formData: FormData) {
   const estate = formData.get('estate') as string | null
   const corridor = (formData.get('corridor') as string) || null
   const status = (formData.get('status') as string) || 'Available'
+  const package_type = (formData.get('package_type') as string) || 'House & Land'
   const land_size_sqm = formData.get('land_size_sqm') ? Number(formData.get('land_size_sqm')) : null
   const land_price = formData.get('land_price') ? Number(formData.get('land_price')) : null
   const builder = (formData.get('builder') as string) || null
@@ -28,6 +29,7 @@ export async function createListing(formData: FormData) {
   const { data: listing, error } = await service.from('listings').insert({
     suburb,
     estate: estate || null,
+    package_type,
     corridor: corridor as 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null,
     status: status as 'Available' | 'Hold' | 'Under contract' | 'Sold',
     land_size_sqm,
@@ -83,6 +85,7 @@ export async function updateListing(id: string, formData: FormData) {
   const estate = (formData.get('estate') as string) || null
   const corridor = (formData.get('corridor') as string) || null
   const status = (formData.get('status') as string) || 'Available'
+  const package_type = (formData.get('package_type') as string) || 'House & Land'
   const land_size_sqm = formData.get('land_size_sqm') ? Number(formData.get('land_size_sqm')) : null
   const land_price = formData.get('land_price') ? Number(formData.get('land_price')) : null
   const builder = (formData.get('builder') as string) || null
@@ -110,6 +113,7 @@ export async function updateListing(id: string, formData: FormData) {
   const { error } = await service.from('listings').update({
     suburb,
     estate,
+    package_type,
     corridor: corridor as 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null,
     status: status as 'Available' | 'Hold' | 'Under contract' | 'Sold',
     land_size_sqm,
