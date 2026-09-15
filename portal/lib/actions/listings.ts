@@ -61,6 +61,12 @@ export async function createListing(formData: FormData) {
     floor_plan_image_url = await uploadImage(floorPlanFile, `listings/${listing.id}/${Date.now()}-floorplan`)
   }
 
+  // Fall back to a selected design-library image when no file was uploaded.
+  const facadeLib = (formData.get('facade_image_url') as string) || ''
+  const floorLib = (formData.get('floor_plan_image_url') as string) || ''
+  if (!facade_image_url && facadeLib) facade_image_url = facadeLib
+  if (!floor_plan_image_url && floorLib) floor_plan_image_url = floorLib
+
   // Update image URLs after upload
   if (facade_image_url || floor_plan_image_url) {
     await service.from('listings').update({
@@ -109,6 +115,12 @@ export async function updateListing(id: string, formData: FormData) {
   if (floorPlanFile && floorPlanFile.size > 0) {
     floor_plan_image_url = await uploadImage(floorPlanFile, `listings/${id}/${Date.now()}-floorplan`) ?? undefined
   }
+
+  // Fall back to a selected design-library image when no file was uploaded.
+  const facadeLib = (formData.get('facade_image_url') as string) || ''
+  const floorLib = (formData.get('floor_plan_image_url') as string) || ''
+  if (facade_image_url === undefined && facadeLib) facade_image_url = facadeLib
+  if (floor_plan_image_url === undefined && floorLib) floor_plan_image_url = floorLib
 
   const { error } = await service.from('listings').update({
     suburb,
