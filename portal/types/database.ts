@@ -2,6 +2,8 @@
 export type Role = 'admin' | 'team' | 'partner'
 export type Corridor = 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast'
 export type ListingStatus = 'Available' | 'Hold' | 'Under contract' | 'Sold'
+export const PACKAGE_TYPES = ['House & Land', 'Dual Key', 'Dual Income', 'Rooming / Co-living', 'Townhouse', 'Other'] as const
+export type PackageType = typeof PACKAGE_TYPES[number]
 
 export type Profile = {
   id: string
@@ -20,6 +22,7 @@ export type Listing = {
   id: string
   suburb: string
   estate: string | null
+  package_type: string | null
   corridor: Corridor | null
   status: ListingStatus
   land_size_sqm: number | null
@@ -96,6 +99,7 @@ export type Database = {
           id: string
           suburb: string
           estate: string | null
+          package_type: string | null
           corridor: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
           status: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm: number | null
@@ -116,6 +120,7 @@ export type Database = {
         Insert: {
           suburb: string
           estate?: string | null
+          package_type?: string | null
           corridor?: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
           status?: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm?: number | null
@@ -134,6 +139,7 @@ export type Database = {
         Update: {
           suburb?: string
           estate?: string | null
+          package_type?: string | null
           corridor?: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
           status?: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm?: number | null
@@ -175,6 +181,7 @@ export type Database = {
           id: string
           suburb: string
           estate: string | null
+          package_type: string | null
           corridor: 'Moreton Bay' | 'Ipswich' | 'Sunshine Coast' | 'Logan' | 'Gold Coast' | null
           status: 'Available' | 'Hold' | 'Under contract' | 'Sold'
           land_size_sqm: number | null
