@@ -121,6 +121,9 @@ export default async function ListingDetailPage({ params }: PageProps) {
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor(listing.status)}`}>
                 {listing.status}
               </span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#efe9dd] text-[#7a5c2e]">
+                {listing.package_type ?? 'House & Land'}
+              </span>
               {listing.corridor && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
                   {listing.corridor}
