@@ -1,12 +1,19 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import type { Listing } from '@/types/database'
 import { isPdfUrl } from '@/lib/utils'
 import { PACKAGE_TYPES } from '@/types/database'
 
 const CORRIDORS = ['Moreton Bay', 'Ipswich', 'Sunshine Coast', 'Logan', 'Gold Coast'] as const
 const STATUSES = ['Available', 'Hold', 'Under contract', 'Sold'] as const
+const DESIGNS = [
+  { name: 'Agnes 168', facade: '/agnes-168-facade.jpg', floor: '/agnes-168-floor.jpg' },
+  { name: 'Fitzroy 189', facade: '/fitzroy-189-facade.jpg', floor: '/fitzroy-189-floor.jpg' },
+  { name: 'Hamilton 204', facade: '/hamilton-204-facade.jpg', floor: '/hamilton-204-floor.jpg' },
+  { name: 'Lamont 220', facade: '/lamont-220-facade.jpg', floor: '/lamont-220-floor.jpg' },
+  { name: 'Musgrave 185', facade: '/musgrave-185-facade.jpg', floor: '/musgrave-185-floor.jpg' },
+]
 
 interface ListingFormProps {
   listing?: Listing | null
@@ -24,6 +31,7 @@ export default function ListingForm({
   isAdmin = false,
 }: ListingFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
+  const [design, setDesign] = useState<{ name: string; facade: string; floor: string } | null>(null)
 
   return (
     <form ref={formRef} action={action} className="space-y-6">
@@ -178,6 +186,34 @@ export default function ListingForm({
       {/* Images */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h2 className="text-sm font-semibold text-slate-900 mb-4">Images</h2>
+
+        <div className="mb-5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">Choose a design</label>
+          <select
+            value={design?.name ?? ''}
+            onChange={(e) => setDesign(DESIGNS.find(d => d.name === e.target.value) ?? null)}
+            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+          >
+            <option value="">— Select a design (fills facade & floor plan) —</option>
+            {DESIGNS.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+          </select>
+          {design && (
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="rounded-lg overflow-hidden border border-slate-200 h-28">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={design.facade} alt={`${design.name} facade`} className="w-full h-full object-cover" />
+              </div>
+              <div className="rounded-lg overflow-hidden border border-slate-200 h-28">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={design.floor} alt={`${design.name} floor plan`} className="w-full h-full object-contain bg-white" />
+              </div>
+            </div>
+          )}
+          <p className="text-xs text-slate-400 mt-2">Selecting a design sets its facade &amp; floor plan. To use your own instead, leave this blank and upload files below (uploads override).</p>
+          <input type="hidden" name="facade_image_url" value={design?.facade ?? ''} />
+          <input type="hidden" name="floor_plan_image_url" value={design?.floor ?? ''} />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">Facade image</label>
