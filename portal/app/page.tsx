@@ -233,10 +233,11 @@ export default function Home() {
                 <p className="font-display text-lg break-words">b.olsen@boldinvest.com.au</p>
                 <p className="text-xs opacity-60 mt-1">Tap to email</p>
               </a>
-              <div className="bg-white rounded-2xl p-6 border border-black/5">
+              <a href={"https://www.google.com/maps/place/71+Stapylton+St,+North+Lakes+QLD+4509/@-27.2377425,153.0044943,918m/data=!3m2!1e3!4b1!4m5!3m4!1s0x6b93fad6ca804d9f:0xb85ff7dd74a98e18!8m2!3d-27.2377473!4d153.0070692"} target="_blank" rel="noopener noreferrer" className="block bg-white rounded-2xl p-6 border border-black/5 hover:shadow-md transition-shadow">
                 <p className="uppercase text-[11px] tracking-widest mb-2" style={{ color: GOLD }}>Office</p>
                 <p className="font-display text-lg leading-snug">71 Stapylton Street,<br />North Lakes QLD 4509</p>
-              </div>
+                <p className="text-xs opacity-60 mt-1">View on map</p>
+              </a>
             </div>
           </div>
         </section>
