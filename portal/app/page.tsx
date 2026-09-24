@@ -217,8 +217,32 @@ export default function Home() {
           </Link>
         </section>
 
-        {/* Contact / footer */}
-        <footer id="contact" style={{ backgroundColor: NAVY, color: CREAM }} className="pt-16 pb-10">
+        {/* Contact */}
+        <section id="contact" className="py-20" style={{ backgroundColor: '#efe9dd' }}>
+          <div className="max-w-4xl mx-auto px-5 text-center">
+            <h2 className="font-display text-4xl md:text-5xl">Get in <span style={{ color: GOLD }}>touch</span></h2>
+            <p className="mt-4 opacity-80 max-w-xl mx-auto leading-relaxed">Talk to us about investment-grade house &amp; land packages, or partnering with BOLD Invest.</p>
+            <div className="mt-10 grid sm:grid-cols-3 gap-5 text-left">
+              <a href="tel:0407020122" className="block bg-white rounded-2xl p-6 border border-black/5 hover:shadow-md transition-shadow">
+                <p className="uppercase text-[11px] tracking-widest mb-2" style={{ color: GOLD }}>Phone</p>
+                <p className="font-display text-2xl">0407 020 122</p>
+                <p className="text-xs opacity-60 mt-1">Tap to call</p>
+              </a>
+              <a href="mailto:b.olsen@boldinvest.com.au" className="block bg-white rounded-2xl p-6 border border-black/5 hover:shadow-md transition-shadow">
+                <p className="uppercase text-[11px] tracking-widest mb-2" style={{ color: GOLD }}>Email</p>
+                <p className="font-display text-lg break-words">b.olsen@boldinvest.com.au</p>
+                <p className="text-xs opacity-60 mt-1">Tap to email</p>
+              </a>
+              <div className="bg-white rounded-2xl p-6 border border-black/5">
+                <p className="uppercase text-[11px] tracking-widest mb-2" style={{ color: GOLD }}>Office</p>
+                <p className="font-display text-lg leading-snug">71 Stapylton Street,<br />North Lakes QLD 4509</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer style={{ backgroundColor: NAVY, color: CREAM }} className="pt-16 pb-10">
           <div className="max-w-6xl mx-auto px-5 grid md:grid-cols-3 gap-10">
             <div>
               <div className="font-display text-2xl mb-4"><span className="font-semibold">BOLD</span> <span style={{ color: GOLD }}>INVEST</span></div>
@@ -226,8 +250,8 @@ export default function Home() {
             </div>
             <div className="text-sm opacity-80 space-y-2">
               <p className="uppercase tracking-widest text-xs mb-3" style={{ color: GOLD }}>Contact</p>
-              <p>0407 020 122</p>
-              <p>b.olsen@boldinvest.com.au</p>
+              <p><a href="tel:0407020122" className="hover:opacity-70">0407 020 122</a></p>
+              <p><a href="mailto:b.olsen@boldinvest.com.au" className="hover:opacity-70">b.olsen@boldinvest.com.au</a></p>
               <p>71 Stapylton Street, North Lakes QLD 4509</p>
             </div>
             <div className="text-sm opacity-80 space-y-2">
