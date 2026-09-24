@@ -24,10 +24,12 @@ const promos: { title: string; body: string; image?: string }[] = [
   {
     title: 'Investor-Grade Stock',
     body: 'Dual-income and dual-key designs engineered for yield in high-demand South East Queensland corridors.',
+    image: '/investor-grade-stock.jpg',
   },
   {
     title: 'Referral Partner Program',
     body: 'Buyers agents, brokers and planners access boutique house & land stock and earn on every settlement.',
+    image: '/referral-partner.jpg',
   },
 ]
 
