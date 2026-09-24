@@ -15,10 +15,11 @@ const nav = [
   { label: 'Contact', href: '#contact' },
 ]
 
-const promos = [
+const promos: { title: string; body: string; image?: string }[] = [
   {
     title: 'Fixed-Price Certainty',
     body: 'Locked-in build costs and fixed site costs, so the numbers you sign are the numbers you settle on.',
+    image: '/fixed-price-certainty.jpg',
   },
   {
     title: 'Investor-Grade Stock',
@@ -130,7 +131,14 @@ export default function Home() {
         <section id="packages" className="max-w-6xl mx-auto px-5 py-10 grid md:grid-cols-3 gap-6">
           {promos.map((c) => (
             <div key={c.title} className="bg-white rounded-2xl p-8 border border-black/5 flex flex-col">
-              <div className="h-40 rounded-xl mb-6" style={{ background: `linear-gradient(135deg, #e9e2d4, ${GOLD}44)` }} />
+              {c.image ? (
+                <div className="h-40 rounded-xl mb-6 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="h-40 rounded-xl mb-6" style={{ background: `linear-gradient(135deg, #e9e2d4, ${GOLD}44)` }} />
+              )}
               <h3 className="font-display text-2xl mb-2" style={{ color: GOLD }}>{c.title}</h3>
               <p className="text-sm leading-relaxed opacity-80 flex-1">{c.body}</p>
               <a href="#contact" className="mt-6 inline-block text-xs uppercase tracking-widest border rounded-full px-5 py-2 self-start" style={{ borderColor: GOLD, color: GOLD }}>Learn more</a>
