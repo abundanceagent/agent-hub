@@ -206,16 +206,16 @@ export default function Home() {
         <section className="py-16" style={{ backgroundColor: NAVY, color: CREAM }}>
           <div className="max-w-5xl mx-auto px-5 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="font-display text-5xl" style={{ color: GOLD }}><span className="text-red-400">[X]</span>+</div>
-              <p className="text-xs uppercase tracking-widest mt-2 opacity-80">Years building <span className="text-red-400">(confirm)</span></p>
+              <div className="font-display text-5xl" style={{ color: GOLD }}>15+</div>
+              <p className="text-xs uppercase tracking-widest mt-2 opacity-80">Years building</p>
             </div>
             <div>
               <div className="font-display text-5xl" style={{ color: GOLD }}>3</div>
               <p className="text-xs uppercase tracking-widest mt-2 opacity-80">SEQ growth corridors</p>
             </div>
             <div>
-              <div className="font-display text-5xl" style={{ color: GOLD }}><span className="text-red-400">[X]</span></div>
-              <p className="text-xs uppercase tracking-widest mt-2 opacity-80">Packages settled <span className="text-red-400">(confirm)</span></p>
+              <div className="font-display text-5xl" style={{ color: GOLD }}>3,000+</div>
+              <p className="text-xs uppercase tracking-widest mt-2 opacity-80">Homes built</p>
             </div>
           </div>
         </section>
