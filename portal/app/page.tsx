@@ -41,7 +41,7 @@ const segments = [
 ]
 
 const why = [
-  { h: 'South East QLD focus', p: 'We build where the fundamentals stack up — Logan, Ipswich and Moreton Bay growth corridors.' },
+  { h: 'South East QLD focus', p: 'We build where the fundamentals stack up — Logan, Ipswich, Moreton Bay, the Toowoomba region, and the Gold Coast and Sunshine Coast regions.' },
   { h: 'Cashflow-first design', p: 'Every package is assessed on real yield, not just capital-growth promises.' },
   { h: 'End-to-end, hands-off', p: 'Land, build, and handover managed for you — a genuinely passive path to a completed asset.' },
   { h: 'Preferred-builder model', p: 'We attach to boutique estates as preferred builder, giving you access to stock others never see.' },
@@ -210,7 +210,7 @@ export default function Home() {
               <p className="text-xs uppercase tracking-widest mt-2 opacity-80">Years building</p>
             </div>
             <div>
-              <div className="font-display text-5xl" style={{ color: GOLD }}>3</div>
+              <div className="font-display text-5xl" style={{ color: GOLD }}>6</div>
               <p className="text-xs uppercase tracking-widest mt-2 opacity-80">SEQ growth corridors</p>
             </div>
             <div>
