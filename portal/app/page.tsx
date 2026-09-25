@@ -127,6 +127,21 @@ export default function Home() {
             From first-time investors to portfolio builders and SMSF buyers, we make owning a completed, tenant-ready asset
             straightforward, transparent and genuinely hands-off.
           </p>
+
+          <div className="mt-12 pt-12 border-t border-black/10">
+            <h3 className="font-display text-3xl md:text-4xl leading-tight">
+              15 years of building with certainty in Queensland.
+            </h3>
+            <p className="mt-6 leading-relaxed opacity-80">
+              Fifteen years ago, Bold Living began building homes across Southeast Queensland with a simple focus &ndash;
+              quality, flexibility, and certainty. Since then, we&apos;ve delivered more than 3,000 homes, refining our
+              systems and pricing to reduce risk and remove surprises for our clients.
+            </p>
+            <p className="mt-4 leading-relaxed opacity-80">
+              Today, we continue to offer guaranteed fixed price contracts, fixed site costs and transparent inclusions
+              &ndash; giving Queensland families confidence at every stage of their build.
+            </p>
+          </div>
         </section>
 
         {/* Promo cards */}
